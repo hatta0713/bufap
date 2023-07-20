@@ -1,0 +1,11 @@
+/.pytest_cache
+/.vscode
+/buapconf-tool.py
+/build
+/dist
+/ouilookup.json
+/paramiko-sample1.py
+/paramiko-sample2.py
+/retest.py
+/sample
+/tksample1.py
