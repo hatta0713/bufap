@@ -2,9 +2,18 @@
 
 bufap は Buffalo製の法人無線LANアクセスポイントWAPMシリーズを管理するためのツールおよびクラスです。
 
-## インストール
+## コマンドラインツールとしての使い方
 
-## 使用方法
+### インストール
+zipファイルを解凍する
+* bufap-cli.exe コマンドラインツール本体
+* bufap-getall.bat コマンドラインツールを使って無線APの情報をすべて取得するバッチプログラム
+
+### 使用方法
+
+#### bufap-cli.exe
+使い方はヘルプを参照
+
 ```text
 usage: bufap-cli.exe [-h] (--get-conf | --read-conf | --wireless-monitor | --client-monitor | --exec) [--host HOST] [--username USERNAME] [--password PASSWORD] [--infile INFILE] [--outfile OUTFILE] [--summarize {yes,no}]
                     [--column {user,default}] [--format {raw,text,dict,csv}] [--command COMMAND]
@@ -31,3 +40,21 @@ options:
                         クライアントモニタ、無線環境モニタの場合：raw(APの出力そのまま。csv(CSV形式)
   --command COMMAND     exec コマンド指定時のコマンドを実行する
 ```
+
+#### bufap-getall.bat
+
+先頭に記載されているAPのアドレス、ユーザー名、パスワードを書き換えて実行すると、
+バッチファイルのあるフォルダに outputフォルダを作成し以下のファイルが保存される。
+
+* %HOST%-config.txt
+* %HOST%-status.txt
+* %HOST%-syslog.txt
+* %HOST%-client.csv
+* %HOST%-wireless.csv
+  
+```text
+usage: bufap-getall.bat
+```
+
+> **Warning**
+> 無線環境モニタを実行するのでクライアントが切断されます
