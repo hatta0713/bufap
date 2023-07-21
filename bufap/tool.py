@@ -107,7 +107,7 @@ class BUFAPtool:
         start_flg = False
         band = ""
         for line in output.splitlines():
-            m = re.match(r"\[ (?P<band>\S+) \]", line)
+            m = re.match(r"\[\s*(?P<band>\S+)\s*\]", line)
             if m:
                 start_flg = True
                 band = m.group("band")
@@ -118,21 +118,26 @@ class BUFAPtool:
 
             if line.startswith("SSID") or line.startswith("----------"):
                 continue
-            (ssid, mac, tx, rx, rssi, connect, idle) = line.split()
-            vendor = common.mac2vendor(mac)
-            ret.append(
-                {
-                    "band": band,
-                    "SSID": ssid,
-                    "MAC": mac,
-                    "Vendor": vendor,
-                    "Tx": common.convert_to_byte(tx),
-                    "Rx": common.convert_to_byte(rx),
-                    "RSSI": rssi,
-                    "connect": connect,
-                    "idle": idle,
-                }
-            )
+
+            try:
+                (ssid, mac, tx, rx, rssi, connect, idle) = line.split()
+                vendor = common.mac2vendor(mac)
+                ret.append(
+                    {
+                        "band": band,
+                        "SSID": ssid,
+                        "MAC": mac,
+                        "Vendor": vendor,
+                        "Tx": common.convert_to_byte(tx),
+                        "Rx": common.convert_to_byte(rx),
+                        "RSSI": rssi,
+                        "connect": connect,
+                        "idle": idle,
+                    }
+                )
+            except Exception as e:
+                logging.warning(f"{e}")
+                logging.warning(f"{line}")
 
         return ret
 
