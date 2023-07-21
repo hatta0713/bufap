@@ -130,3 +130,8 @@ class BUFAPtool:
             )
 
         return ret
+
+    def exec(self, command):
+        ret = self.get(command)
+
+        return ret
