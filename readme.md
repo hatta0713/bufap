@@ -6,7 +6,7 @@ bufap は Buffalo製の法人無線LANアクセスポイントWAPMシリーズ�
 
 ## 使用方法
 ```text
-usage: bufap-cliexe [-h] (--get-conf | --read-conf | --wireless-monitor | --client-monitor | --exec) [--host HOST] [--username USERNAME] [--password PASSWORD] [--infile INFILE] [--outfile OUTFILE] [--summarize {yes,no}]
+usage: bufap-cli.exe [-h] (--get-conf | --read-conf | --wireless-monitor | --client-monitor | --exec) [--host HOST] [--username USERNAME] [--password PASSWORD] [--infile INFILE] [--outfile OUTFILE] [--summarize {yes,no}]
                     [--column {user,default}] [--format {raw,text,dict,csv}] [--command COMMAND]
 
 WAPMシリーズコンフィグツール
