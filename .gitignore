@@ -1,7 +1,10 @@
 /.pytest_cache
 /.vscode
-*.pyc
 /build
 /dist
 /sample
+/bin
+/output
+*.exe
+*.pyc
 ouilookup.json

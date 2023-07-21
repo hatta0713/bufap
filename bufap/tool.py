@@ -1,5 +1,6 @@
 import csv
 import io
+import logging
 import re
 
 from bufap.ssh import BUFAPssh
@@ -51,21 +52,25 @@ class BUFAPtool:
                 continue
             if not start_flg:
                 continue
-            (index, mac, ssid, channel, mode, rssi, noise, security) = line.split()
-            vendor = common.mac2vendor(mac)
-            ret.append(
-                {
-                    "Index": index,
-                    "MAC": mac,
-                    "Vendor": vendor,
-                    "SSID": ssid,
-                    "Channel": channel,
-                    "Mode": mode,
-                    "RSSI": rssi,
-                    "Noise": noise,
-                    "Security": security,
-                }
-            )
+            try:
+                (index, mac, ssid, channel, mode, rssi, noise, security) = line.split()
+                vendor = common.mac2vendor(mac)
+                ret.append(
+                    {
+                        "Index": index,
+                        "MAC": mac,
+                        "Vendor": vendor,
+                        "SSID": ssid,
+                        "Channel": channel,
+                        "Mode": mode,
+                        "RSSI": rssi,
+                        "Noise": noise,
+                        "Security": security,
+                    }
+                )
+            except Exception as e:
+                logging.warning(f"{e}")
+                logging.warning(f"{line}")
 
         return ret
 
