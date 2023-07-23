@@ -1,5 +1,5 @@
 import pytest
-from . import bridge
+from bufap.parser import bridge
 
 
 @pytest.mark.parametrize(

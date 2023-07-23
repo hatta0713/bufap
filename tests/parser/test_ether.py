@@ -1,5 +1,5 @@
 import pytest
-from . import ether
+from bufap.parser import ether
 
 
 @pytest.mark.parametrize(

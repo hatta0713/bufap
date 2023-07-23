@@ -1,5 +1,5 @@
 import pytest
-from . import ip
+from bufap.parser import ip
 
 
 @pytest.mark.parametrize(

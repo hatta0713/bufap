@@ -1,5 +1,6 @@
 import pytest
-from . import airset
+
+from bufap.parser import airset
 
 
 @pytest.mark.parametrize(

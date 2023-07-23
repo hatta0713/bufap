@@ -1,5 +1,5 @@
 import pytest
-from . import common
+from bufap import common
 
 
 @pytest.mark.parametrize(

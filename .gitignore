@@ -2,9 +2,13 @@
 /.vscode
 /build
 /dist
+/release
+/release_temp
 /sample
 /bin
 /output
 *.exe
 *.pyc
 ouilookup.json
+requirements*.lock
+bufap-gui.py

@@ -1,5 +1,5 @@
 import pytest
-from . import radius
+from bufap.parser import radius
 
 
 @pytest.mark.parametrize(

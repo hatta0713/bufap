@@ -11,8 +11,8 @@ zipファイルを解凍する
 
 ### 使用方法
 
-#### bufap-cli.exe
-使い方はヘルプを参照
+<details>
+<summary> bufap-cli.exe </summary>
 
 ```text
 usage: bufap-cli.exe [-h] (--get-conf | --read-conf | --wireless-monitor | --client-monitor | --exec) [--host HOST] [--username USERNAME] [--password PASSWORD] [--infile INFILE] [--outfile OUTFILE] [--summarize {yes,no}]
@@ -40,8 +40,10 @@ options:
                         クライアントモニタ、無線環境モニタの場合：raw(APの出力そのまま。csv(CSV形式)
   --command COMMAND     exec コマンド指定時のコマンドを実行する
 ```
+</details>
 
-#### bufap-getall.bat
+<details>
+<summary> bufap-getall.bat </summary>
 
 先頭に記載されているAPのアドレス、ユーザー名、パスワードを書き換えて実行すると、
 バッチファイルのあるフォルダに outputフォルダを作成し以下のファイルが保存される。
@@ -56,5 +58,6 @@ options:
 usage: bufap-getall.bat
 ```
 
-> **Warning**
-> 無線環境モニタを実行するのでクライアントが切断されます
+| :warning: 無線環境モニタを実行するので端末が切断されます |
+|--------------------------------------------------------|
+</details>
