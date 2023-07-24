@@ -43,5 +43,5 @@ version_scheme = "python-simplified-semver"
 local_scheme = "no-local-version"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "bufap/_version.py"
+version-file = "src/bufap/_version.py"
 

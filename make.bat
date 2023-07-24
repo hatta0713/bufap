@@ -25,9 +25,9 @@ del /Q /S %RELEASE_TEMP%
 mkdir %RELEASE%
 mkdir %RELEASE_TEMP%
 
-rye run pyinstaller.exe bufap\cli\bufap-cli.spec --distpath %RELEASE_TEMP%
+rye run pyinstaller.exe src\bufap\cli\bufap-cli.spec --distpath %RELEASE_TEMP%
 
-COPY bufap\cli\bufap-getall.bat %RELEASE_TEMP%
+COPY src\bufap\cli\bufap-getall.bat %RELEASE_TEMP%
 COPY README.md %RELEASE_TEMP%
 
 pushd %RELEASE_TEMP%
