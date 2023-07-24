@@ -101,9 +101,8 @@ class BUFAPconf:
 
         return self.parse_as_dict(column)
 
-    def get_config_file(self, filename):
-        with open(filename, "r") as f:
-            self.conf_text = f.read()
+    def get_config_file(self, fp) -> str:
+        self.conf_text = fp.read()
 
         return self.conf_text
 
