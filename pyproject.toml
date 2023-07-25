@@ -34,6 +34,7 @@ allow-direct-references = true
 
 [tool.hatch.build]
 ignore-vcs = true
+exclude = ["release/*","realse_temp/*"]
 
 [tool.hatch.version]
 source = "vcs"
