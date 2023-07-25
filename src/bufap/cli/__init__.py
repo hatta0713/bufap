@@ -74,6 +74,42 @@ def exec(args) -> None:
         _output(output, args.outfile)
 
 
+def get_all(args) -> None:
+    if not os.path.exists(args.outdir):
+        os.makedirs(args.outdir)
+    args.format = "raw"
+    args.column = "user"
+    args.summarize = False
+
+    fpath = os.path.join(args.outdir, f"{args.host}-config.txt")
+    with open(fpath, "w") as f:
+        args.outfile = f
+        args.command = "show config all"
+        exec(args)
+
+    fpath = os.path.join(args.outdir, f"{args.host}-status.txt")
+    with open(fpath, "w") as f:
+        args.outfile = f
+        args.command = "show status all"
+        exec(args)
+
+    fpath = os.path.join(args.outdir, f"{args.host}-syslog.txt")
+    with open(fpath, "w") as f:
+        args.outfile = f
+        args.command = "show syslog facility all"
+        exec(args)
+
+    args.format = "csv"
+    fpath = os.path.join(args.outdir, f"{args.host}-client.csv")
+    with open(fpath, "w") as f:
+        args.outfile = f
+        client_monitor(args)
+    fpath = os.path.join(args.outdir, f"{args.host}-wireless.csv")
+    with open(fpath, "w") as f:
+        args.outfile = f
+        wireless_monitor(args)
+
+
 def parse_args():
     parsers = {}
 
@@ -92,7 +128,9 @@ def parse_args():
         name="read-conf", aliases=["rc"], help="設定を読み込み"
     )
     parsers["rc"].set_defaults(handler=read_conf)
-    parsers["rc"].add_argument("--infile", type=argparse.FileType("r"), help="設定ファイルのパス")
+    parsers["rc"].add_argument(
+        "--infile", type=argparse.FileType("r"), help="設定ファイルのパス"
+    )
 
     parsers["wm"] = subparsers.add_parser(
         name="wireless-monitor", aliases=["wm"], help="無線環境モニタ"
@@ -111,21 +149,28 @@ def parse_args():
     )
     parsers["exec"].set_defaults(handler=exec)
 
+    parsers["ga"] = subparsers.add_parser(
+        name="get-all", aliases=["ga"], help="情報の一括取得"
+    )
+    parsers["ga"].set_defaults(handler=get_all)
 
     for p in ["wm", "cm"]:
         parsers[p].add_argument(
             "--format",
             choices=["raw", "text", "dict", "csv"],
             default="text",
-            help="raw: APの出力そのまま | "
-                 "csv: CSV形式",
+            help="raw: APの出力そのまま | " "csv: CSV形式",
         )
 
-    for p in ["gc", "rc", "wm", "cm", "exec"]:
+    for p in ["gc", "rc", "wm", "cm", "exec", "ga"]:
         parsers[p].add_argument("--host", help="ホストアドレス(IP)")
         parsers[p].add_argument("--username", default="admin", help="ユーザー名")
         parsers[p].add_argument("--password", default="password", help="パスワード")
-        parsers[p].add_argument("--outfile", type=argparse.FileType("w"),default='-',help="出力先ファイルのパス")
+
+    for p in ["gc", "rc", "wm", "cm", "exec"]:
+        parsers[p].add_argument(
+            "--outfile", type=argparse.FileType("w"), default="-", help="出力先ファイルのパス"
+        )
 
     for p in ["gc", "rc"]:
         parsers[p].add_argument(
@@ -149,6 +194,9 @@ def parse_args():
         parsers[p].add_argument(
             "--column", choices=["user", "default"], default="user", help="出力するカラムを指定"
         )
+
+    for p in ["ga"]:
+        parsers[p].add_argument("--outdir", default="output", help="出力先のフォルダを指定")
 
     args = parsers["root"].parse_args()
 
