@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['bufap-cli.py'],
+    ['__init__.py'],
     pathex=[],
     binaries=[],
     datas=[],
