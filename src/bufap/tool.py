@@ -16,6 +16,9 @@ class BUFAPtool:
     def get(self, command) -> str:
         return self.ssh.get(command)
 
+    def gets(self, commands) -> list:
+        return self.ssh.gets(commands)
+
     def get_wireless_monitor(self, format="csv") -> list:
         ret = self.get("airset wireless-monitor scan")
         common.print_waiting("scanning", 60)
@@ -143,5 +146,10 @@ class BUFAPtool:
 
     def exec(self, command):
         ret = self.get(command)
+
+        return ret
+
+    def apply(self, commands):
+        ret = self.gets(commands)
 
         return ret

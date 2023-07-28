@@ -110,6 +110,15 @@ def get_all(args) -> None:
         wireless_monitor(args)
 
 
+def apply(args) -> None:
+    tool = bufap.BUFAPtool(args.host, args.username, args.password)
+
+    commands = args.infile.read()
+    output = tool.apply(commands)
+
+    _output(output, args.outfile)
+
+
 def parse_args():
     parsers = {}
 
@@ -128,9 +137,6 @@ def parse_args():
         name="read-conf", aliases=["rc"], help="設定を読み込み"
     )
     parsers["rc"].set_defaults(handler=read_conf)
-    parsers["rc"].add_argument(
-        "--infile", type=argparse.FileType("r"), help="設定ファイルのパス"
-    )
 
     parsers["wm"] = subparsers.add_parser(
         name="wireless-monitor", aliases=["wm"], help="無線環境モニタ"
@@ -154,6 +160,9 @@ def parse_args():
     )
     parsers["ga"].set_defaults(handler=get_all)
 
+    parsers["ap"] = subparsers.add_parser(name="apply", aliases=["ap"], help="設定の一括反映")
+    parsers["ap"].set_defaults(handler=apply)
+
     for p in ["wm", "cm"]:
         parsers[p].add_argument(
             "--format",
@@ -162,12 +171,12 @@ def parse_args():
             help="raw: APの出力そのまま | " "csv: CSV形式",
         )
 
-    for p in ["gc", "rc", "wm", "cm", "exec", "ga"]:
+    for p in ["gc", "rc", "wm", "cm", "exec", "ga", "ap"]:
         parsers[p].add_argument("--host", help="ホストアドレス(IP)")
         parsers[p].add_argument("--username", default="admin", help="ユーザー名")
         parsers[p].add_argument("--password", default="password", help="パスワード")
 
-    for p in ["gc", "rc", "wm", "cm", "exec"]:
+    for p in ["gc", "rc", "wm", "cm", "exec", "ap"]:
         parsers[p].add_argument(
             "--outfile", type=argparse.FileType("w"), default="-", help="出力先ファイルのパス"
         )
@@ -193,6 +202,11 @@ def parse_args():
 
         parsers[p].add_argument(
             "--column", choices=["user", "default"], default="user", help="出力するカラムを指定"
+        )
+
+    for p in ["rc", "ap"]:
+        parsers[p].add_argument(
+            "--infile", type=argparse.FileType("r"), help="設定ファイルのパス"
         )
 
     for p in ["ga"]:
