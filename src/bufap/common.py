@@ -36,7 +36,7 @@ def mac2vendor(mac) -> str:
 
 def convert_to_byte(size: str, unit="B") -> int:
     units = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB")
-    m = re.match(r"(?P<size>[0-9\.]+)(?P<unit>\SB)", size)
+    m = re.match(r"(?P<size>[0-9\.]+)(?P<unit>\S*B)", size)
     if not m:
         raise ValueError(f"invalid syntax: {size}")
 
