@@ -1,6 +1,6 @@
 [project]
 name = "bufap"
-description = "A Python module (and CLI tool) for managing Buffalo wireless access points."
+description = "A Python module (and CLI/GUI tool) for managing Buffalo wireless access points."
 authors = [
     { name = "Masumitsu Hatta", email = "Masumitsu.Hatta@gmail.com" }
 ]
