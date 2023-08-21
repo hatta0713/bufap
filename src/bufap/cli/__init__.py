@@ -220,7 +220,7 @@ def parse_args():
 def main() -> None:
     logging.basicConfig(
         level=logging.WARN,
-        format="%(asctime)s [%(levelname)s] %(message)s",
+        format="%(asctime)s [%(levelname)s] [%(filename)s:%(lineno)d %(funcName)s] %(message)s",
         stream=sys.stderr,
     )
 
