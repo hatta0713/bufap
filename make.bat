@@ -26,6 +26,8 @@ mkdir %RELEASE%
 mkdir %RELEASE_TEMP%
 
 rye run pyinstaller.exe src\bufap\cli\bufap-cli.spec --distpath %RELEASE_TEMP%
+rye run pyinstaller.exe src\bufap\gui\bufap-gui.spec --distpath %RELEASE_TEMP%
+
 
 COPY README.md %RELEASE_TEMP%
 
