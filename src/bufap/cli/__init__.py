@@ -8,6 +8,7 @@ import sys
 from typing import Union, IO
 
 import bufap
+import bufap.common
 
 
 def _output(output: list, outfile: Union[str, bytes, os.PathLike]) -> None:
@@ -54,6 +55,8 @@ def parse_conf(
 
 def wireless_monitor(args) -> None:
     tool = bufap.BUFAPtool(args.host, args.username, args.password)
+    tool.scan_wireless_monitor()
+    bufap.common.print_waiting("scanning", 60)
     output = tool.get_wireless_monitor(args.format)
 
     _output(output, args.outfile)
@@ -220,7 +223,7 @@ def parse_args():
 def main() -> None:
     logging.basicConfig(
         level=logging.WARN,
-        format="%(asctime)s [%(levelname)s] %(message)s",
+        format="%(asctime)s [%(levelname)s] [%(filename)s:%(lineno)d %(funcName)s] %(message)s",
         stream=sys.stderr,
     )
 

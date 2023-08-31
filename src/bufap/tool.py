@@ -19,13 +19,17 @@ class BUFAPtool:
     def gets(self, commands) -> list:
         return self.ssh.gets(commands)
 
-    def get_wireless_monitor(self, format="csv") -> list:
+    def scan_wireless_monitor(self):
         ret = self.get("airset wireless-monitor scan")
-        common.print_waiting("scanning", 60)
+
+    def get_wireless_monitor(self, format="csv") -> list:
+        # ret = self.get("airset wireless-monitor scan")
+        # common.print_waiting("scanning", 60)
         ret = self.get("airset wireless-monitor show status")
 
         if format in ["dict"]:
             return self.parse_wireless_monitor(ret)
+
         if format in ["csv"]:
             fields = [
                 "Index",
@@ -43,8 +47,6 @@ class BUFAPtool:
             writer.writeheader()
             writer.writerows(self.parse_wireless_monitor(ret))
             return ret_csv.getvalue()
-
-        return ret
 
     def parse_wireless_monitor(self, output: str) -> list:
         ret = []
@@ -103,7 +105,13 @@ class BUFAPtool:
             writer.writeheader()
             writer.writerows(self.parse_client_monitor(ret))
 
-        return ret_csv.getvalue()
+            return ret_csv.getvalue()
+
+        if format in ["list"]:
+            ret = []
+            for r in self.parse_client_monitor(ret):
+                ret.append(r.values())
+            return ret
 
     def parse_client_monitor(self, output: str) -> list:
         ret = []
