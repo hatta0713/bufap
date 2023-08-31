@@ -15,7 +15,7 @@ set RELEASE_TEMP=%CURRENT%release_temp
 
 cd /d %~dp0
 
-git flow release publish %VER%
+git flow release finish %VER%
 
 del /Q /S %RELEASE%
 del /Q /S %RELEASE_TEMP%
@@ -32,3 +32,4 @@ pushd %RELEASE_TEMP%
 powershell compress-archive -Force * %RELEASE%\bufap-%VER%.zip
 popd
 
+git flow release publish %VER%
