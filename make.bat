@@ -3,14 +3,10 @@
 set VER=%1
 
 IF "a%VER%"=="a" (
-    ECHO tag required ^(ex: 0.5^)
+    ECHO version required ^(ex: 1.2.3^)
     exit /b
 )
 
-IF not "a%VER%"=="adev" (
-    git tag %VER%
-    git push --tags
-)
 
 set CURRENT=%~dp0
 set RELEASE=%CURRENT%release
@@ -19,6 +15,7 @@ set RELEASE_TEMP=%CURRENT%release_temp
 
 cd /d %~dp0
 
+git flow release finish %VER%
 
 del /Q /S %RELEASE%
 del /Q /S %RELEASE_TEMP%
@@ -35,3 +32,4 @@ pushd %RELEASE_TEMP%
 powershell compress-archive -Force * %RELEASE%\bufap-%VER%.zip
 popd
 
+git flow release publish %VER%
