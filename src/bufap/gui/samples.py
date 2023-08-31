@@ -1,4 +1,4 @@
-SAMPLE_CONF = [(f"line {i}", f"line {i}") for i in range(20)]
+SAMPLE_CONF = [{"user": f"line {i}", "default": f"line {i}"} for i in range(20)]
 
 SAMPLE_CM = [
     (

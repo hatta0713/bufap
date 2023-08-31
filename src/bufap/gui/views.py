@@ -1,3 +1,4 @@
+import logging
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.filedialog as filedialog
@@ -9,7 +10,7 @@ DEFAULT_PASS = "password"
 
 class MainView(tk.Frame):
     def __init__(self, parent):
-        print("MainView:__init__")
+        logging.debug("MainView:__init__")
         super().__init__(parent)
 
         self.create_widget()
@@ -38,11 +39,11 @@ class MainView(tk.Frame):
         self, sample_conf=None, sample_wm=None, sample_cm=None, sample_exec=None
     ):
         if sample_conf is not None:
-            self.conf_view.set_rows(sample_conf)
+            self.conf_view.add_rows(sample_conf)
         if sample_cm is not None:
-            self.cm_view.set_rows(sample_cm)
+            self.cm_view.add_rows(sample_cm)
         if sample_wm is not None:
-            self.wm_view.set_rows(sample_wm)
+            self.wm_view.add_rows(sample_wm)
         if sample_exec is not None:
             self.exec_view.set_data(sample_exec)
 
@@ -55,7 +56,7 @@ class LoginView(tk.Frame):
         username: str = DEFAULT_USER,
         password: str = DEFAULT_PASS,
     ):
-        print("LoginView:__init__")
+        logging.debug("LoginView:__init__")
 
         super().__init__(parent)
 
@@ -67,7 +68,7 @@ class LoginView(tk.Frame):
         self.pack()
 
     def create_widget(self):
-        print("LoginView:create_widget")
+        logging.debug("LoginView:create_widget")
         tk.Label(self, text="IPアドレス").pack(side=tk.LEFT)
         tk.Entry(self, width=15, textvariable=self.hostname).pack(side=tk.LEFT, padx=5)
 
@@ -77,21 +78,24 @@ class LoginView(tk.Frame):
         tk.Label(self, text="パスワード").pack(side=tk.LEFT)
         tk.Entry(self, width=15, textvariable=self.password).pack(side=tk.LEFT, padx=5)
 
-        tk.Button(self, text="情報取得", command=self.get_info).pack(side=tk.LEFT)
+        self.get_info_button = tk.Button(self, text="情報取得", command=self.get_info)
+        self.get_info_button.pack(side=tk.LEFT)
 
-    def set_action(self, func):
-        pass
+    def set_get_info_click_command(self, command):
+        self.get_info_button["command"] = command
 
     def get_info(self):
-        tk.messagebox.showinfo("(view)", "情報取得ボタンが押下されました")
+        tk.messagebox.showinfo("(view)", "情報取得ボタンがクリックされました")
 
 
 class ConfView(tk.Frame):
     DISP_ALL = 0
     DISP_USER_ONLY = 1
 
+    rows_data = []
+
     def __init__(self, parent):
-        print("ConfView:__init__")
+        logging.debug("ConfView:__init__")
         super().__init__(parent)
 
         self.disp_mode = tk.IntVar()
@@ -101,7 +105,6 @@ class ConfView(tk.Frame):
 
     def get_columns(self):
         columns = {self.DISP_USER_ONLY: ["ユーザー設定"], self.DISP_ALL: ["ユーザー設定", "初期値"]}
-        print(self.disp_mode.get())
 
         return columns[self.disp_mode.get()]
 
@@ -141,7 +144,7 @@ class ConfView(tk.Frame):
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         ysbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    def set_colomns(self):
+    def set_columns(self):
         """
         テーブルの列名を指定
         """
@@ -150,29 +153,49 @@ class ConfView(tk.Frame):
         for col in columns:
             self.tree.heading(col, text=col)
 
-    def set_row(self, index="", row_data=[]):
+    def add_row(self, index="", row_data=[]):
         """
         新規レコードの挿入
         """
-        self.tree.insert("", index="end", text=index, values=row_data)
+        if self.disp_mode.get() == self.DISP_USER_ONLY:
+            if row_data["user"].strip() != "":
+                self.tree.insert(
+                    "", index="end", text=index, values=(row_data["user"],)
+                )
+        else:
+            self.tree.insert(
+                "",
+                index="end",
+                text=index,
+                values=(row_data["user"], row_data["default"]),
+            )
 
-    def set_rows(self, rows_data):
+        self.rows_data.append(row_data)
+
+    def add_rows(self, rows_data):
         """
         複数の新規レコードの挿入
         """
         for i, row_data in enumerate(rows_data):
-            self.set_row(index=i, row_data=row_data)
+            self.add_row(index=i, row_data=row_data)
 
     def delete_rows(self):
         """
         レコードの全削除
         """
+        self.rows_data = []
         children = self.tree.get_children("")
         for child in children:
             self.tree.delete(child)
 
+    def update_data(self, rows_data):
+        self.delete_rows()
+        self.set_columns()
+        self.add_rows(rows_data)
+
     def radio_click(self):
-        tk.messagebox.showinfo("(view)", f"{self.disp_mode.get()}が選択されました")
+        # tk.messagebox.showinfo("(view)", f"{self.disp_mode.get()}が選択されました")
+        self.update_data(self.rows_data)
 
     def set_radio_click_command(self, command):
         self.radio_button1["command"] = command
@@ -181,7 +204,7 @@ class ConfView(tk.Frame):
 
 class ExecView(tk.Frame):
     def __init__(self, parent):
-        print("ExecView:__init__")
+        logging.debug("ExecView:__init__")
         super().__init__(parent)
 
         self.create_widget()
@@ -198,7 +221,7 @@ class ExecView(tk.Frame):
 
 class ClientMonitorView(tk.Frame):
     def __init__(self, parent):
-        print("ClientMonitorView:__init__")
+        logging.debug("ClientMonitorView:__init__")
         super().__init__(parent)
 
         self.create_widget()
@@ -241,18 +264,18 @@ class ClientMonitorView(tk.Frame):
             self.tree.heading(col["name"], text=col["name"])
             self.tree.column(col["name"], width=col["width"], anchor=col["anchor"])
 
-    def set_row(self, index="", row_data=[]):
+    def add_row(self, index="", row_data=[]):
         """
         新規レコードの挿入
         """
         self.tree.insert("", index="end", text=index, values=row_data)
 
-    def set_rows(self, rows_data):
+    def add_rows(self, rows_data):
         """
         複数の新規レコードの挿入
         """
         for i, row_data in enumerate(rows_data):
-            self.set_row(index=i, row_data=row_data)
+            self.add_row(index=i, row_data=row_data)
 
     def delete_rows(self):
         """
@@ -262,10 +285,14 @@ class ClientMonitorView(tk.Frame):
         for child in children:
             self.tree.delete(child)
 
+    def update_data(self, rows_data):
+        self.delete_rows()
+        self.add_rows(rows_data)
+
 
 class WirelessMonitorView(tk.Frame):
     def __init__(self, parent):
-        print("WirelessMonitorView:__init__")
+        logging.debug("WirelessMonitorView:__init__")
         super().__init__(parent)
 
         self.create_widget()
@@ -308,18 +335,18 @@ class WirelessMonitorView(tk.Frame):
             self.tree.heading(col["name"], text=col["name"])
             self.tree.column(col["name"], width=col["width"], anchor=col["anchor"])
 
-    def set_row(self, index="", row_data=[]):
+    def add_row(self, index="", row_data=[]):
         """
         新規レコードの挿入
         """
         self.tree.insert("", index="end", text=index, values=row_data)
 
-    def set_rows(self, rows_data):
+    def add_rows(self, rows_data):
         """
         複数の新規レコードの挿入
         """
         for i, row_data in enumerate(rows_data):
-            self.set_row(index=i, row_data=row_data)
+            self.add_row(index=i, row_data=row_data)
 
     def delete_rows(self):
         """
@@ -329,12 +356,16 @@ class WirelessMonitorView(tk.Frame):
         for child in children:
             self.tree.delete(child)
 
+    def update_data(self, rows_data):
+        self.delete_rows()
+        self.add_rows(rows_data)
+
 
 if __name__ == "__main__":
-    import samples
+    from bufap.gui import samples
 
     root = tk.Tk()
-    root.title("sample1view")
+    root.title("Buffalo Wireless AP Tools")
     main_view = MainView(root)
     main_view.set_data(
         sample_conf=samples.SAMPLE_CONF,
