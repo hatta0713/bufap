@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 import logging
 import pprint
 import os
@@ -13,7 +14,14 @@ import bufap.common
 
 def _output(output: list, outfile: Union[str, bytes, os.PathLike]) -> None:
     if outfile:
-        outfile.write(output)
+        if type(output) == list:
+            output = json.dumps(output)
+            # output = "\n".join([json.dumps(line) for line in output])
+        try:
+            outfile.write(output)
+        except Exception as e:
+            logging.warning(output)
+            logging.warning(f"type: {type(output)}, {e}")
     else:
         print(output)
 
@@ -77,6 +85,13 @@ def exec(args) -> None:
         _output(output, args.outfile)
 
 
+def get_syslog(args) -> None:
+    tool = bufap.BUFAPtool(args.host, args.username, args.password)
+    output = tool.get_syslog(args.format)
+
+    _output(output, args.outfile)
+
+
 def get_all(args) -> None:
     if not os.path.exists(args.outdir):
         os.makedirs(args.outdir)
@@ -96,21 +111,21 @@ def get_all(args) -> None:
         args.command = "show status all"
         exec(args)
 
-    fpath = os.path.join(args.outdir, f"{args.host}-syslog.txt")
-    with open(fpath, "w") as f:
-        args.outfile = f
-        args.command = "show syslog facility all"
-        exec(args)
-
     args.format = "csv"
     fpath = os.path.join(args.outdir, f"{args.host}-client.csv")
     with open(fpath, "w") as f:
         args.outfile = f
         client_monitor(args)
+
     fpath = os.path.join(args.outdir, f"{args.host}-wireless.csv")
     with open(fpath, "w") as f:
         args.outfile = f
         wireless_monitor(args)
+
+    fpath = os.path.join(args.outdir, f"{args.host}-syslog.csv")
+    with open(fpath, "w") as f:
+        args.outfile = f
+        get_syslog(args)
 
 
 def apply(args) -> None:
@@ -151,6 +166,14 @@ def parse_args():
     )
     parsers["cm"].set_defaults(handler=client_monitor)
 
+    parsers["log"] = subparsers.add_parser(name="get-syslog", help="ログの取得")
+    parsers["log"].set_defaults(handler=get_syslog)
+
+    parsers["ga"] = subparsers.add_parser(
+        name="get-all", aliases=["ga"], help="情報の一括取得"
+    )
+    parsers["ga"].set_defaults(handler=get_all)
+
     parsers["exec"] = subparsers.add_parser(name="exec", help="実行したコマンドの結果を取得")
     parsers["exec"].add_argument(
         "--command",
@@ -158,15 +181,10 @@ def parse_args():
     )
     parsers["exec"].set_defaults(handler=exec)
 
-    parsers["ga"] = subparsers.add_parser(
-        name="get-all", aliases=["ga"], help="情報の一括取得"
-    )
-    parsers["ga"].set_defaults(handler=get_all)
-
     parsers["ap"] = subparsers.add_parser(name="apply", aliases=["ap"], help="設定の一括反映")
     parsers["ap"].set_defaults(handler=apply)
 
-    for p in ["wm", "cm"]:
+    for p in ["wm", "cm", "log"]:
         parsers[p].add_argument(
             "--format",
             choices=["raw", "text", "dict", "csv"],
@@ -174,12 +192,12 @@ def parse_args():
             help="raw: APの出力そのまま | " "csv: CSV形式",
         )
 
-    for p in ["gc", "rc", "wm", "cm", "exec", "ga", "ap"]:
+    for p in ["gc", "rc", "wm", "cm", "exec", "ga", "ap", "log"]:
         parsers[p].add_argument("--host", help="ホストアドレス(IP)")
         parsers[p].add_argument("--username", default="admin", help="ユーザー名")
         parsers[p].add_argument("--password", default="password", help="パスワード")
 
-    for p in ["gc", "rc", "wm", "cm", "exec", "ap"]:
+    for p in ["gc", "rc", "wm", "cm", "exec", "ap", "log"]:
         parsers[p].add_argument(
             "--outfile", type=argparse.FileType("w"), default="-", help="出力先ファイルのパス"
         )
