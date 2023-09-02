@@ -1,6 +1,11 @@
 @ECHO OFF
 
+git push --tags
+
+git switch main
+
 for /f "usebackq" %%a in (`rye version`) do set VER=%%a
+echo Version: %VER%
 
 set CURRENT=%~dp0
 set RELEASE=%CURRENT%release
@@ -25,7 +30,6 @@ pushd %RELEASE_TEMP%
 powershell compress-archive -Force * %RELEASE%\bufap-%VER%.zip
 popd
 
-git flow release finish %VER%
-git push --tags
+
 rye build --clean
 rye publish
