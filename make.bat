@@ -1,12 +1,6 @@
 @ECHO OFF
 
-set VER=%1
-
-IF "a%VER%"=="a" (
-    ECHO version required ^(ex: 1.2.3^)
-    exit /b
-)
-
+for /f "usebackq" %%a in (`rye version`) do set VER=%%a
 
 set CURRENT=%~dp0
 set RELEASE=%CURRENT%release
@@ -33,4 +27,5 @@ popd
 
 git flow release finish %VER%
 git push --tags
+rye build --clean
 rye publish
