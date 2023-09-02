@@ -27,5 +27,8 @@ popd
 
 git flow release finish %VER%
 git push --tags
+
+git switch main
+
 rye build --clean
 rye publish
