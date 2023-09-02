@@ -177,7 +177,7 @@ class BUFAPtool:
             return ret
 
         if format in ["dict"]:
-            return self.parse_log(ret)
+            return self.parse_syslog(ret)
 
         if format in ["csv"]:
             fields = [
