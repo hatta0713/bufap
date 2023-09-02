@@ -1,12 +1,11 @@
 @ECHO OFF
 
-set VER=%1
+git push --tags
 
-IF "a%VER%"=="a" (
-    ECHO version required ^(ex: 1.2.3^)
-    exit /b
-)
+git switch main
 
+for /f "usebackq" %%a in (`rye version`) do set VER=%%a
+echo Version: %VER%
 
 set CURRENT=%~dp0
 set RELEASE=%CURRENT%release
@@ -31,6 +30,6 @@ pushd %RELEASE_TEMP%
 powershell compress-archive -Force * %RELEASE%\bufap-%VER%.zip
 popd
 
-git flow release finish %VER%
-git push --tags
+
+rye build --clean
 rye publish
