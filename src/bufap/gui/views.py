@@ -28,15 +28,22 @@ class MainView(tk.Frame):
         self.conf_view = ConfView(notebook)
         self.wm_view = WirelessMonitorView(notebook)
         self.cm_view = ClientMonitorView(notebook)
+        self.syslog_view = SyslogView(notebook)
         self.exec_view = ExecView(notebook)
 
         notebook.add(self.conf_view, text="設定")
         notebook.add(self.wm_view, text="ワイヤレス環境モニタ")
         notebook.add(self.cm_view, text="クライアントモニタ")
+        notebook.add(self.syslog_view, text="ログ")
         notebook.add(self.exec_view, text="コマンド実行")
 
     def set_data(
-        self, sample_conf=None, sample_wm=None, sample_cm=None, sample_exec=None
+        self,
+        sample_conf=None,
+        sample_wm=None,
+        sample_cm=None,
+        sample_syslog=None,
+        sample_exec=None,
     ):
         if sample_conf is not None:
             self.conf_view.add_rows(sample_conf)
@@ -44,6 +51,8 @@ class MainView(tk.Frame):
             self.cm_view.add_rows(sample_cm)
         if sample_wm is not None:
             self.wm_view.add_rows(sample_wm)
+        if sample_syslog is not None:
+            self.syslog_view.add_rows(sample_syslog)
         if sample_exec is not None:
             self.exec_view.set_data(sample_exec)
 
@@ -152,6 +161,7 @@ class ConfView(tk.Frame):
         self.tree["columns"] = columns
         for col in columns:
             self.tree.heading(col, text=col)
+            self.tree.column(col, width=50, stretch=1, anchor=tk.W)
 
     def add_row(self, index="", row_data=[]):
         """
@@ -361,6 +371,67 @@ class WirelessMonitorView(tk.Frame):
         self.add_rows(rows_data)
 
 
+class SyslogView(tk.Frame):
+    def __init__(self, parent):
+        logging.debug("SyslogView:__init__")
+        super().__init__(parent)
+
+        self.create_widget()
+        self.pack()
+
+    def create_widget(self):
+        self.tree = ttk.Treeview(self, columns=self.get_columns())
+        self.tree["show"] = "headings"
+
+        ysbar = tk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
+        self.tree.configure(yscrollcommand=ysbar.set)
+
+        ysbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.tree.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+
+        self.set_columns()
+
+    def get_columns(self):
+        columns = [
+            {"name": "datetime", "width": 5 * 19, "anchor": tk.W},
+            {"name": "facility", "width": 5 * 14, "anchor": tk.CENTER},
+            {"name": "message", "width": 5 * 128, "anchor": tk.W},
+        ]
+
+        return columns
+
+    def set_columns(self):
+        self.tree["columns"] = [c["name"] for c in self.get_columns()]
+        for col in self.get_columns():
+            self.tree.heading(col["name"], text=col["name"])
+            self.tree.column(col["name"], width=col["width"], anchor=col["anchor"])
+
+    def add_row(self, index="", row_data=[]):
+        """
+        新規レコードの挿入
+        """
+        self.tree.insert("", index="end", text=index, values=row_data)
+
+    def add_rows(self, rows_data):
+        """
+        複数の新規レコードの挿入
+        """
+        for i, row_data in enumerate(rows_data):
+            self.add_row(index=i, row_data=row_data)
+
+    def delete_rows(self):
+        """
+        レコードの全削除
+        """
+        children = self.tree.get_children("")
+        for child in children:
+            self.tree.delete(child)
+
+    def update_data(self, rows_data):
+        self.delete_rows()
+        self.add_rows(rows_data)
+
+
 if __name__ == "__main__":
     from bufap.gui import samples
 
@@ -371,6 +442,7 @@ if __name__ == "__main__":
         sample_conf=samples.SAMPLE_CONF,
         sample_wm=samples.SAMPLE_WM,
         sample_cm=samples.SAMPLE_CM,
+        sample_syslog=samples.SAMPLE_SYSLOG,
     )
     root.geometry("900x500")
     root.mainloop()

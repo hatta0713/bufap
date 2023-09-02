@@ -104,3 +104,26 @@ SAMPLE_WM = [
         "AES",
     ),
 ]
+
+SAMPLE_SYSLOG = [
+    (
+        "2023/09/01 14:14:40",
+        "WIRELESS",
+        "wl1 (2.4GHz): Detect interference(74per) [with Non-802.11] on channel 1.",
+    ),
+    (
+        "2023/09/01 14:11:44",
+        "WIRELESS",
+        "wl1 (2.4GHz): Detect interference(82per) [with Non-802.11] on channel 1.",
+    ),
+    (
+        "2023/09/01 14:11:33",
+        "WIRELESS",
+        "wl1 (2.4GHz): Detect interference(76per) [with Non-802.11] on channel 1.",
+    ),
+    (
+        "2023/09/01 14:07:04",
+        "WIRELESS",
+        "wl1 (2.4GHz): Detect interference(76per) [with Non-802.11] on channel 1.",
+    ),
+]

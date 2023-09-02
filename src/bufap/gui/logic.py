@@ -32,3 +32,8 @@ class Logic:
         ret = [list(r.values()) for r in self.tool.get_wireless_monitor(format="dict")]
 
         return ret
+
+    def get_syslog(self):
+        ret = [list(r.values()) for r in self.tool.get_syslog(format="dict")]
+
+        return ret

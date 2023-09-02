@@ -26,7 +26,7 @@ class MainControl:
         root.mainloop()
 
     def set_commands(self):
-        print("MainControl:set_commands")
+        logging.info("MainControl:set_commands")
         self.main_view.login_view.set_get_info_click_command(
             self.get_info_click_command
         )
@@ -40,39 +40,43 @@ class MainControl:
             self.main_view.login_view.password.get(),
         )
 
-        print("start WaitDialog")
+        logging.info("start WaitDialog")
         dlg = WaitDialog("処理中", 60)
 
-        print("start scan_thread")
+        logging.info("start scan_thread")
         thread1 = threading.Thread(target=self.get_info, args=(dlg,))
         thread1.start()
 
     def get_info(self, dlg):
-        print("start get_info")
+        logging.info("start get_info")
 
-        print("start scan_wm")
+        logging.info("start scan_wm")
         self.logic.scan_wm()
 
-        print("update conf")
+        logging.info("update conf")
         dlg.set_text("設定取得中")
         self.main_view.conf_view.update_data(self.logic.get_conf())
 
-        print("update cm")
+        logging.info("update cm")
         dlg.set_text("クライアントモニタ取得中")
         self.main_view.cm_view.update_data(self.logic.get_cm())
 
-        print("wait scan wm")
+        logging.info("update syslog")
+        dlg.set_text("ログ取得中")
+        self.main_view.syslog_view.update_data(self.logic.get_syslog())
+
+        logging.info("wait scan wm")
         dlg.set_text("無線環境モニタ取得中")
         while not dlg.end_flg:
             time.sleep(0.5)
 
-        print("update wm")
+        logging.info("update wm")
         self.main_view.wm_view.update_data(self.logic.get_wm())
 
-        print("close dialog")
+        logging.info("close dialog")
         dlg.destroy()
 
-        print("end get_info")
+        logging.info("end get_info")
 
 
 class WaitDialog(tk.Toplevel):
