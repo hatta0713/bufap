@@ -46,13 +46,13 @@ class MainView(tk.Frame):
         sample_exec=None,
     ):
         if sample_conf is not None:
-            self.conf_view.add_rows(sample_conf)
+            self.conf_view.update_data(sample_conf)
         if sample_cm is not None:
-            self.cm_view.add_rows(sample_cm)
+            self.cm_view.update_data(sample_cm)
         if sample_wm is not None:
-            self.wm_view.add_rows(sample_wm)
+            self.wm_view.update_data(sample_wm)
         if sample_syslog is not None:
-            self.syslog_view.add_rows(sample_syslog)
+            self.syslog_view.update_data(sample_syslog)
         if sample_exec is not None:
             self.exec_view.set_data(sample_exec)
 
@@ -297,7 +297,8 @@ class ClientMonitorView(tk.Frame):
 
     def update_data(self, rows_data):
         self.delete_rows()
-        self.add_rows(rows_data)
+        rows = [list(r.values()) for r in rows_data]
+        self.add_rows(rows)
 
 
 class WirelessMonitorView(tk.Frame):
@@ -368,7 +369,7 @@ class WirelessMonitorView(tk.Frame):
 
     def update_data(self, rows_data):
         self.delete_rows()
-        self.add_rows(rows_data)
+        self.add_rows(list(r.values()) for r in rows_data)
 
 
 class SyslogView(tk.Frame):
@@ -429,7 +430,7 @@ class SyslogView(tk.Frame):
 
     def update_data(self, rows_data):
         self.delete_rows()
-        self.add_rows(rows_data)
+        self.add_rows(list(r.values()) for r in rows_data)
 
 
 if __name__ == "__main__":

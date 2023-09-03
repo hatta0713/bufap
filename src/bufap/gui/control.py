@@ -1,3 +1,4 @@
+import csv
 import logging
 import sys
 import threading
@@ -47,23 +48,58 @@ class MainControl:
         thread1 = threading.Thread(target=self.get_info, args=(dlg,))
         thread1.start()
 
+    def output(self, fname, data):
+        try:
+            if type(data) == list:
+                with open(fname, "w") as f:
+                    writerfile = csv.writer(f, lineterminator="\n")
+                    writerfile.writerow(data[0].keys())
+                    writerfile.writerows([d.values() for d in data])
+            else:
+                print(f"output2: {type(data)}")
+                with open(fname, "w") as f:
+                    f.write(data)
+            return True
+        except Exception as e:
+            logging.error(e)
+            logging.error(data[0])
+            return e
+
     def get_info(self, dlg):
+        host = self.main_view.login_view.hostname.get()
+
         logging.info("start get_info")
 
         logging.info("start scan_wm")
         self.logic.scan_wm()
 
-        logging.info("update conf")
-        dlg.set_text("設定取得中")
-        self.main_view.conf_view.update_data(self.logic.get_conf())
+        try:
+            logging.info("update conf")
+            dlg.set_text("設定取得中")
+            conf_data = self.logic.get_conf()
+            self.output(f"{host}-config.csv", conf_data)
+            self.main_view.conf_view.update_data(conf_data)
+        except Exception as e:
+            dlg.set_text(e)
+            dlg.end_flg = True
+            return False
 
         logging.info("update cm")
         dlg.set_text("クライアントモニタ取得中")
-        self.main_view.cm_view.update_data(self.logic.get_cm())
+        cm_data = self.logic.get_cm()
+        self.main_view.cm_view.update_data(cm_data)
+        self.output(f"{host}-client.csv", cm_data)
 
         logging.info("update syslog")
         dlg.set_text("ログ取得中")
-        self.main_view.syslog_view.update_data(self.logic.get_syslog())
+        syslog_data = self.logic.get_syslog()
+        self.main_view.syslog_view.update_data(syslog_data)
+        self.output(f"{host}-syslog.csv", syslog_data)
+
+        logging.info("update status")
+        dlg.set_text("ステータス取得中")
+        status_data = self.logic.get_status(format="raw")
+        self.output(f"{host}-status.txt", status_data)
 
         logging.info("wait scan wm")
         dlg.set_text("無線環境モニタ取得中")
@@ -71,10 +107,12 @@ class MainControl:
             time.sleep(0.5)
 
         logging.info("update wm")
-        self.main_view.wm_view.update_data(self.logic.get_wm())
+        wm_data = self.logic.get_wm()
+        self.main_view.wm_view.update_data(wm_data)
+        self.output(f"{host}-wireless.csv", wm_data)
 
-        logging.info("close dialog")
-        dlg.destroy()
+        logging.info("end message")
+        dlg.set_text("データ取得完了し、ファイルに保管しました。")
 
         logging.info("end get_info")
 
@@ -120,7 +158,7 @@ class WaitDialog(tk.Toplevel):
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.WARN,
+        level=logging.INFO,
         format="%(asctime)s [%(levelname)s] [%(filename)s:%(lineno)d %(funcName)s] %(message)s",
         stream=sys.stdout,
     )

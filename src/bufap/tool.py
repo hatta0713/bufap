@@ -227,3 +227,14 @@ class BUFAPtool:
                 logging.warning(f"{line}")
 
         return ret
+
+    def get_status(self, format="dict"):
+        ret = self.get("show status all")
+
+        if format in ["text", "raw"]:
+            return ret
+
+        if format in ["dict"]:
+            return [{"status": l.strip()} for l in ret.splitlines()]
+
+        return None
