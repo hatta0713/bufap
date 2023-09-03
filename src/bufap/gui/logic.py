@@ -12,7 +12,7 @@ class Logic:
         self.password = password
         self.tool = bufap.BUFAPtool(hostname, username, password)
 
-    def get_conf(self):
+    def get_conf(self) -> list:
         self.conf = bufap.BUFAPconf(
             hostname=self.hostname, username=self.username, password=self.password
         )
@@ -20,20 +20,25 @@ class Logic:
 
         return ret
 
-    def get_cm(self):
-        ret = [list(r.values()) for r in self.tool.get_client_monitor(format="dict")]
+    def get_cm(self) -> list:
+        ret = self.tool.get_client_monitor(format="dict")
 
         return ret
 
-    def scan_wm(self):
+    def scan_wm(self) -> None:
         self.tool.scan_wireless_monitor()
 
-    def get_wm(self):
-        ret = [list(r.values()) for r in self.tool.get_wireless_monitor(format="dict")]
+    def get_wm(self) -> list:
+        ret = self.tool.get_wireless_monitor(format="dict")
 
         return ret
 
-    def get_syslog(self):
-        ret = [list(r.values()) for r in self.tool.get_syslog(format="dict")]
+    def get_syslog(self) -> list:
+        ret = self.tool.get_syslog(format="dict")
+
+        return ret
+
+    def get_status(self, format="dict") -> list:
+        ret = self.tool.get_status(format="dict")
 
         return ret
